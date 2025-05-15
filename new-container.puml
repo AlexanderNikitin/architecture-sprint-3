@@ -1,0 +1,49 @@
+@startuml
+!include https://raw.githubusercontent.com/plantuml-stdlib/C4-PlantUML/master/C4_Container.puml
+!define DEVICONS https://raw.githubusercontent.com/tupadr3/plantuml-icon-font-sprites/master/devicons
+!define FONTAWESOME https://raw.githubusercontent.com/tupadr3/plantuml-icon-font-sprites/master/font-awesome-5
+' uncomment the following line and comment the first to use locally
+' !include C4_Container.puml
+!include DEVICONS/java.puml
+!include DEVICONS/react.puml
+!include DEVICONS/postgresql.puml
+!include DEVICONS/redis.puml
+
+' LAYOUT_TOP_DOWN()
+' LAYOUT_AS_SKETCH()
+LAYOUT_WITH_LEGEND()
+
+title Диаграмма контейнеров целевой системы теплого дома
+
+Person(customer, "Пользователь", "Любой авторизованный пользователь")
+Person(admin, "Администратор", "Пользователь с дополнительными полномочиями")
+
+System_Boundary(saas, "Теплый дом") {
+    Container(api, "API", "Java, Spring", "Управление устройствами", "java")
+    Container(ui, "SPA", "JS, React", "Интерфейс пользователя", "react")
+    Container(admin_ui, "Admin SPA", "JS, React", "Интерфейс администратора", "react")
+    ContainerDb(database, "Database", "SQL Database", "Хранит информацию об устройствах", "postgresql")
+    ContainerDb(cache, "Cache", "Redis", "Хранит информацию об устройствах", "redis")
+}
+
+System_Ext(module_warm, "Модуль отопления", "Регулирует свою температуру и показывает текущую")
+System_Ext(module_light, "Модуль управления освещением", "Позволяет управлять освещением")
+System_Ext(module_gate, "Модуль управления воротами", "Открывает и закрывает ворота")
+System_Ext(module_video, "Модуль видеонаблюдения", "Позволяет просматривать обстановаку")
+
+Rel_D(customer, ui, "Использует", "HTTPS")
+Rel_D(admin, admin_ui, "Использует", "HTTPS")
+
+
+Rel(admin_ui, api, "REST-запросы", "JSON/HTTPS")
+Rel(ui, api, "REST-запросы", "JSON/HTTPS")
+Rel_R(api, database, "Read & write", "SQL/JDBC")
+Rel_R(api, cache, "Read & write", "TCP")
+
+
+Rel_D(api, module_warm, "Управляет")
+Rel_D(api, module_light, "Управляет")
+Rel_D(api, module_gate, "Управляет")
+Rel_D(api, module_video, "Управляет")
+
+@enduml

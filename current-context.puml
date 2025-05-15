@@ -1,0 +1,23 @@
+@startuml
+!include https://raw.githubusercontent.com/plantuml-stdlib/C4-PlantUML/master/C4_Context.puml
+' uncomment the following line and comment the first to use locally
+' !include C4_Context.puml
+
+'LAYOUT_TOP_DOWN()
+'LAYOUT_AS_SKETCH()
+LAYOUT_WITH_LEGEND()
+
+title Диаграмма контекстов текущей системы теплого дома
+
+Person(customer, "Пользователь", "Любой пользователь на Земле")
+Person(admin, "Администратор", "Имеет доступ к БД, чтобы добавлять или удалять устройства в системе")
+
+System(warmhouse, "Приложение", "Позволяет запросить и установить параметры температуры каждого элемента отопления, а также включить или отключить определенный элемент отопления")
+
+System_Ext(module, "Модуль отопления", "Регулирует свою температуру и показывает текущую")
+
+Rel_D(customer, warmhouse, "Использует")
+Rel_D(admin, warmhouse, "Использует")
+Rel_D(warmhouse, module, "Управляет")
+
+@enduml
