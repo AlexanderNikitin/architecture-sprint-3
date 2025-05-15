@@ -1,0 +1,26 @@
+@startuml
+!include https://raw.githubusercontent.com/plantuml-stdlib/C4-PlantUML/master/C4_Context.puml
+' uncomment the following line and comment the first to use locally
+' !include C4_Context.puml
+
+'LAYOUT_TOP_DOWN()
+'LAYOUT_AS_SKETCH()
+LAYOUT_WITH_LEGEND()
+
+title Диаграмма контекстов целевой системы теплого дома
+
+Person(customer, "Пользователь", "Любой авторизованный пользователь")
+System(warmhouse, "Приложение", "Позволяет добавлять удалять и управлять устройствами умного дома")
+
+System_Ext(module_warm, "Модуль отопления", "Регулирует свою температуру и показывает текущую")
+System_Ext(module_light, "Модуль управления освещением", "Позволяет управлять освещением")
+System_Ext(module_gate, "Модуль управления воротами", "Открывает и закрывает ворота")
+System_Ext(module_video, "Модуль видеонаблюдения", "Позволяет просматривать обстановаку")
+
+Rel_D(customer, warmhouse, "Использует")
+Rel_D(warmhouse, module_warm, "Управляет")
+Rel_D(warmhouse, module_light, "Управляет")
+Rel_D(warmhouse, module_gate, "Управляет")
+Rel_D(warmhouse, module_video, "Управляет")
+
+@enduml
