@@ -4,31 +4,28 @@ entity USER {
     Id
     Login
     Email
-    Password_hash
+    Password_Hash
 }
 
 entity DEVICE {
     Id
-    User_Id
     Type
-    Custom_name
+    Custom_Name
 }
 
 entity TELEMETRY_RECORD {
     Id
-    Device_Id
     Name
     Value
 }
 
 entity CONTROL_PARAM {
     Id
-    Device_Id
     Name
     Value
 }
 
-USER ||--o{ DEVICE
+USER }|--o{ DEVICE
 DEVICE ||--o{ TELEMETRY_RECORD
 DEVICE ||--o{ CONTROL_PARAM
 
