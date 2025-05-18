@@ -1,0 +1,26 @@
+@startuml
+'https://plantuml.com/class-diagram
+
+title Диаграмма кода целевой системы теплого дома (сервис упралвения устройствами)
+
+class Device {
+    id
+    customName
+    type
+    ControlParam [] params
+}
+
+class ControlParam {
+    name
+    value
+}
+
+class User {
+    id
+    Device[] devices
+}
+
+Device "1" *--> "0..*" ControlParam
+User "1..*" o--> "0..*" Device
+
+@enduml

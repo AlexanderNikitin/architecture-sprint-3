@@ -1,0 +1,32 @@
+@startuml
+
+entity USER {
+    Id
+    Login
+    Email
+    Password_Hash
+}
+
+entity DEVICE {
+    Id
+    Type
+    Custom_Name
+}
+
+entity TELEMETRY_RECORD {
+    Id
+    Name
+    Value
+}
+
+entity CONTROL_PARAM {
+    Id
+    Name
+    Value
+}
+
+USER }|--o{ DEVICE
+DEVICE ||--o{ TELEMETRY_RECORD
+DEVICE ||--o{ CONTROL_PARAM
+
+@enduml

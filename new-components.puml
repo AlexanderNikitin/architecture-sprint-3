@@ -1,0 +1,68 @@
+@startuml
+!include https://raw.githubusercontent.com/plantuml-stdlib/C4-PlantUML/master/C4_Component.puml
+' uncomment the following line and comment the first to use locally
+' !include C4_Component.puml
+
+LAYOUT_WITH_LEGEND()
+
+title Диаграмма компонентов целевой системы теплого дома
+
+Container(api, "API", "Java, Spring", "Управление устройствами", "java")
+Container(ui, "SPA", "JS, React", "Интерфейс пользователя", "react")
+Container(admin_ui, "Admin SPA", "JS, React", "Интерфейс администратора", "react")
+
+Container_Boundary(api, "API") {
+    Component(gateway, "Gateway", "Nginx", "Контролирует авторизацию")
+
+    Component(sign, "Сервис пользователей", "Java, Spring", "Авторизует пользователей")
+    Component(device, "Сервис устройств", "Java, Spring", "Управляет данными об устройствах")
+    Component(control, "Сервис управления", "Java, Spring", "Управляет параметрами устройств")
+    Component(tel_compiled, "Сервис телеметрии", "Java, Spring", "Агрегирует телеметрию по устройствам")
+    Component(tel_device_adapter, "Адаптер получения телеметрии от устройств", "Java, Spring", "Адаптер между устройствами и Kafka")
+
+    ComponentDb(sign_db, "Пользователи", "Postgres", "Хранит данные о пользователях")
+    ComponentDb(device_db, "Устройства", "Postgres", "Хранит данные об устройствах")
+    ComponentDb(control_db, "Параметры устройств", "Postgres", "Хранит параметры устройств")
+    ComponentDb(tel_compiled_db, "Телеметрия", "Postgres", "Хранит исторические данные")
+    ComponentDb(tel_cache_db, "Телеметрия", "Redis", "Хранит недавние данные")
+
+    ComponentQueue(tel_queue, "Телеметрия", "Kafka", "Буфер для данных от устройств")
+}
+
+System_Ext(module_warm, "Модуль отопления", "Регулирует свою температуру и показывает текущую")
+System_Ext(module_light, "Модуль управления освещением", "Позволяет управлять освещением")
+System_Ext(module_gate, "Модуль управления воротами", "Открывает и закрывает ворота")
+System_Ext(module_video, "Модуль видеонаблюдения", "Позволяет просматривать обстановаку")
+
+
+Rel_D(admin_ui, gateway, "REST-запросы", "JSON/HTTPS")
+Rel_D(ui, gateway, "REST-запросы", "JSON/HTTPS")
+
+Rel_D(gateway, sign, "REST-запросы", "JSON/HTTPS")
+Rel_D(gateway, device, "REST-запросы", "JSON/HTTPS")
+Rel_D(gateway, control, "REST-запросы", "JSON/HTTPS")
+Rel_D(gateway, tel_compiled, "REST-запросы", "JSON/HTTPS")
+
+Rel_D(device, device_db, "Read & write", "SQL/JDBC")
+Rel_D(sign, sign_db, "Read & write", "SQL/JDBC")
+Rel_D(control, control_db, "Read & write", "SQL/JDBC")
+
+Rel(tel_compiled, tel_compiled_db, "Read & write", "SQL/JDBC")
+Rel(tel_compiled, tel_cache_db, "Read & write", "TCP")
+Rel(tel_compiled, tel_queue, "Потребляет", "Kafka")
+Rel_L(tel_compiled, device, "REST-запросы", "JSON/HTTPS")
+Rel_L(control, device, "REST-запросы", "JSON/HTTPS")
+
+Rel_U(tel_device_adapter, tel_queue, "Сохраняет", "Kafka")
+
+
+Rel_D(control, module_warm, "Управляет")
+Rel_D(control, module_light, "Управляет")
+Rel_D(control, module_gate, "Управляет")
+Rel_D(control, module_video, "Управляет")
+
+Rel_D(module_warm, tel_device_adapter, "Отправляет телеметрию")
+Rel_D(module_light,  tel_device_adapter, "Отправляет телеметрию")
+Rel_D(module_gate, tel_device_adapter, "Отправляет телеметрию")
+Rel_D(module_video, tel_device_adapter, "Отправляет телеметрию")
+@enduml
